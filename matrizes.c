@@ -30,7 +30,7 @@ void imprime(struct matriz * celula,int linha){
     imprime(celula->prox,linha);
 }
 
-int consulta(struct matriz * celula, int coluna, int linha){
+void consulta(struct matriz * celula, int coluna, int linha){
 
     if(celula == NULL){
         printf("\nValor da posi%c%co (%d,%d) : 0",135,198,linha,coluna);
@@ -44,7 +44,56 @@ int consulta(struct matriz * celula, int coluna, int linha){
     else{
         consulta(celula->prox,coluna,linha);
     }
+}
 
+void excluir(int numlin ,struct matriz *linha[]){
+
+    int i;
+    for(i=0; i<numlin; i++){
+            if(linha[i] == NULL)
+                continue;
+            else{
+                aux = linha[i]->prox;
+                free(linha[i]);
+                linha[i] = NULL;
+                while(aux->prox !=NULL){
+                    aux2 = aux->prox;
+                    free(aux);
+                    aux = NULL;
+                    aux = aux2;
+                }
+                free(aux);
+                aux = NULL;
+            }
+    }
+}
+
+void somalinha(struct matriz*linha,int soma){
+
+    if(linha==NULL){
+        printf("\nSoma = %d",soma);
+        return;
+    }
+    else{
+        soma = soma + linha->valor;
+        return(somalinha(linha->prox,soma));
+    }
+}
+
+int somacol(struct matriz * celula, int coluna){
+
+    if(celula == NULL){
+        return (0);
+    }
+    else if(celula->col > coluna){
+        return (0);
+    }
+    else if(celula->col == coluna){
+        return (celula->valor);
+    }
+    else{
+        return (somacol(celula->prox,coluna));
+    }
 }
 
 int menu(){ //funcao que abre o menu de opções e retorna a desejada
@@ -111,15 +160,22 @@ void main(){
     printf("\n\n");
 
     int opcao;
+    int pl,pc,busca;
     int fim = 1;
     while(fim!=2){
+
         printf("\n\n");
         opcao = menu();
-        if (opcao == 1){
 
+        if (opcao == 1){
+            excluir(numl,linha);
+            for(i=0;i<numl;i++){
+                printf("\n\nLinha %d:",i+1);
+                imprime(linha[i],i);
+            }
         }
+
         if (opcao == 2){
-            int pl,pc,busca;
             printf("\nDigite as posi%c%ces da linha e da coluna: ",135,198);
             scanf("%d %d",&pl,&pc);
             aux = linha[pl-1];
@@ -130,21 +186,45 @@ void main(){
                 printf("\nA posi%c%co escolhida n%co est%c definida nessa matriz",135,198,198,160);
             }
         }
+
         if (opcao == 3){
-
+            printf("\nDigite a linha que deseja somar: ");
+            scanf("%d",&pl);
+            if(pl>0 && pl<=numl){
+                somalinha(linha[pl-1],0);
+            }
+            else {
+                printf("\nA linha escolhida n%co existe nessa matriz",198);
+            }
         }
+
         if (opcao == 4){
-
+            printf("\nDigite a coluna que deseja somar: ");
+            scanf("%d",&pc);
+            busca = 0;
+            if(pc>0 && pc<=numc){
+                 for(i=0;i<numl;i++){
+                        busca = busca + somacol(linha[i],pc);
+                 }
+                 printf("\nSoma = %d",busca);
+            }
+            else {
+                printf("\nA coluna escolhida n%co existe nessa matriz",198);
+            }
         }
+
         if (opcao == 5){
 
         }
+
         if (opcao == 6){
 
         }
+
         if (opcao == 7){
 
         }
+
         if (opcao == 8){
             fim = 2;
         }
