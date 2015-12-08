@@ -10,8 +10,8 @@ struct matriz{
 };
 
 struct matriz * aux;
-
 struct matriz * aux2;
+struct matriz * aux3;
 
 struct matriz * criacelula(int dado, int coluna){
 
@@ -98,6 +98,21 @@ int buscacol(struct matriz * celula, int coluna){
     }
 }
 
+struct matriz * buscacel(struct matriz * celula, int coluna){
+
+    if(celula == NULL){
+        return (celula);
+    }
+    else if(celula->col >= coluna){
+        return (celula);
+    }
+    else{
+        aux3 = celula;
+        return (buscacel(celula->prox,coluna));
+    }
+}
+
+
 int menu(){ //funcao que abre o menu de opções e retorna a desejada
 
         //imprime todas as opções na tela
@@ -162,7 +177,7 @@ void main(){
 
     printf("\n");
     int opcao;
-    int pl,pc,busca;
+    int pl,pc,busca,k=0;
     int fim = 1;
     while(fim!=2){
 
@@ -239,24 +254,40 @@ void main(){
                 }
                 else{
                     aux = NULL;
-                    aux2 = NULL;
-                    if(linha[pl-1]!=NULL){
-                        aux = linha[pl-1];
-                        aux2 = linha[pl-1];
-                        if(linha[pl-1]->col == pc){
-                            linha[pl-1] = linha[pl-1]->prox;
-                            free(aux);
-                            aux = NULL;
+                    aux3 = linha[pl-1];
+                    aux = buscacel(linha[pl-1],pc);
+                    printf("\nEndereco aux: %d",aux);
+                    printf("\nEndereco aux3: %d",aux3);
+                    if(aux!=NULL){
+                        if(aux->col==pc){
+                            aux->valor = busca;
                         }
-                        while(aux != NULL){
-                            aux2 = aux;
-                            aux = aux->prox;
-                            if(aux->col == pc){
-                                aux2->prox = aux->prox;
-                                free(aux);
-                                aux=NULL;
-                            }
+                        else if (aux!=aux3){
+                            aux2 = criacelula(busca,pc);
+                            printf("\nEndereco aux2: %d",aux2);
+                            aux2->prox = aux;
+                            printf("\nEndereco aux2->prox: %d",aux2->prox);
+                            aux3->prox = aux2;
+                            printf("\nEndereco aux3->prox: %d",aux3->prox);
                         }
+                        else {
+                            aux2 = criacelula(busca,pc);
+                            aux2->prox = aux;
+                            linha[pl-1] = aux2;
+                        }
+                    }
+                    else if (aux != aux3){
+                        aux2 = criacelula(busca,pc);
+                        printf("\nEndereco aux2: %d",aux2);
+                        aux2->prox = aux;
+                        printf("\nEndereco aux2->prox: %d",aux2->prox);
+                        aux3->prox = aux2;
+                        printf("\nEndereco aux3->prox: %d",aux3->prox);
+                    }
+                    else{
+                        aux2 = criacelula(busca,pc);
+                        aux2->prox = aux;
+                        linha[pl-1] = aux2;
                     }
                 }
             }
@@ -275,15 +306,12 @@ void main(){
         }
 
         for(i=0;i<numl;i++){
-                printf("\n\nLinha %d:",i+1);
-                imprime(linha[i],i);
-            }
+            printf("\n\nLinha %d:",i+1);
+            imprime(linha[i],i);
+        }
 
     }
+
     printf("\nPROGRAMA ENCERRADO");
     getch();	            //pausa para leitura da tela
 }
-
-
-
-
