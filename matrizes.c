@@ -26,8 +26,25 @@ void imprime(struct matriz * celula,int linha){
     if(celula==NULL){
         return;
     }
-    printf("\t%d(%d)(%d)",celula->valor,linha+1,celula->col+1);
+    printf("\t%d(%d)(%d)",celula->valor,linha+1,celula->col);
     imprime(celula->prox,linha);
+}
+
+int consulta(struct matriz * celula, int coluna, int linha){
+
+    if(celula == NULL){
+        printf("\nValor da posi%c%co (%d,%d) : 0",135,198,linha,coluna);
+    }
+    else if(celula->col > coluna){
+        printf("\nValor da posi%c%co (%d,%d) : 0",135,198,linha,coluna);
+    }
+    else if(celula->col == coluna){
+        printf("\nValor da posi%c%co (%d,%d) : %d",135,198,linha,coluna,celula->valor);
+    }
+    else{
+        consulta(celula->prox,coluna,linha);
+    }
+
 }
 
 int menu(){ //funcao que abre o menu de opções e retorna a desejada
@@ -71,7 +88,7 @@ void main(){
         for(j=0;j<numc;j++){
                 scanf("%d",&novo);
                 if(novo!=0){
-                    aux = criacelula(novo,j);
+                    aux = criacelula(novo,j+1);
 
                     if(linha[i]==NULL){
                         linha[i] = aux;
@@ -96,12 +113,22 @@ void main(){
     int opcao;
     int fim = 1;
     while(fim!=2){
+        printf("\n\n");
         opcao = menu();
         if (opcao == 1){
 
         }
         if (opcao == 2){
-
+            int pl,pc,busca;
+            printf("\nDigite as posi%c%ces da linha e da coluna: ",135,198);
+            scanf("%d %d",&pl,&pc);
+            aux = linha[pl-1];
+            if(pl<=numl && pl>0 && pc>0 && pc<=numc){
+                consulta(linha[pl-1],pc,pl);
+            }
+            else {
+                printf("\nA posi%c%co escolhida n%co est%c definida nessa matriz",135,198,198,160);
+            }
         }
         if (opcao == 3){
 
