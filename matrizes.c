@@ -1,6 +1,8 @@
 #include<stdio.h>
 #include<stdlib.h>
 
+//Não esquecer de tirar a funcao imprime da main do while da main
+
 struct matriz{
     int valor;
     int col;
@@ -80,7 +82,7 @@ void somalinha(struct matriz*linha,int soma){
     }
 }
 
-int somacol(struct matriz * celula, int coluna){
+int buscacol(struct matriz * celula, int coluna){
 
     if(celula == NULL){
         return (0);
@@ -92,7 +94,7 @@ int somacol(struct matriz * celula, int coluna){
         return (celula->valor);
     }
     else{
-        return (somacol(celula->prox,coluna));
+        return (buscacol(celula->prox,coluna));
     }
 }
 
@@ -157,8 +159,8 @@ void main(){
         printf("\n\nLinha %d:",i+1);
         imprime(linha[i],i);
     }
-    printf("\n\n");
 
+    printf("\n");
     int opcao;
     int pl,pc,busca;
     int fim = 1;
@@ -169,10 +171,6 @@ void main(){
 
         if (opcao == 1){
             excluir(numl,linha);
-            for(i=0;i<numl;i++){
-                printf("\n\nLinha %d:",i+1);
-                imprime(linha[i],i);
-            }
         }
 
         if (opcao == 2){
@@ -204,7 +202,7 @@ void main(){
             busca = 0;
             if(pc>0 && pc<=numc){
                  for(i=0;i<numl;i++){
-                        busca = busca + somacol(linha[i],pc);
+                        busca = busca + buscacol(linha[i],pc);
                  }
                  printf("\nSoma = %d",busca);
             }
@@ -214,7 +212,54 @@ void main(){
         }
 
         if (opcao == 5){
-
+            printf("\nDigite as posi%c%ces da linha, da coluna, e o valor a ser atribuido: ",135,198);
+            scanf("%d %d %d",&pl,&pc,&busca);
+            if(pl<=numl && pl>0 && pc>0 && pc<=numc){
+                if(busca==0){
+                    aux = NULL;
+                    aux2 = NULL;
+                    if(linha[pl-1]!=NULL){
+                        aux = linha[pl-1];
+                        aux2 = linha[pl-1];
+                        if(linha[pl-1]->col == pc){
+                            linha[pl-1] = linha[pl-1]->prox;
+                            free(aux);
+                            aux = NULL;
+                        }
+                        while(aux != NULL){
+                            aux2 = aux;
+                            aux = aux->prox;
+                            if(aux->col == pc){
+                                aux2->prox = aux->prox;
+                                free(aux);
+                                aux=NULL;
+                            }
+                        }
+                    }
+                }
+                else{
+                    aux = NULL;
+                    aux2 = NULL;
+                    if(linha[pl-1]!=NULL){
+                        aux = linha[pl-1];
+                        aux2 = linha[pl-1];
+                        if(linha[pl-1]->col == pc){
+                            linha[pl-1] = linha[pl-1]->prox;
+                            free(aux);
+                            aux = NULL;
+                        }
+                        while(aux != NULL){
+                            aux2 = aux;
+                            aux = aux->prox;
+                            if(aux->col == pc){
+                                aux2->prox = aux->prox;
+                                free(aux);
+                                aux=NULL;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         if (opcao == 6){
@@ -228,6 +273,12 @@ void main(){
         if (opcao == 8){
             fim = 2;
         }
+
+        for(i=0;i<numl;i++){
+                printf("\n\nLinha %d:",i+1);
+                imprime(linha[i],i);
+            }
+
     }
     printf("\nPROGRAMA ENCERRADO");
     getch();	            //pausa para leitura da tela
