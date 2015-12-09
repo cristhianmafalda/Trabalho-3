@@ -1,8 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-//Não esquecer de tirar a funcao imprime da main do while da main
-
 struct matriz{
     int valor;
     int col;
@@ -186,9 +184,7 @@ int menu(){ //funcao que abre o menu de opções e retorna a desejada
 void main(){
 
     int numl,numc,i,j,novo;
-
     printf("\nDigite a quantidade de linhas, da colunas, em seguida, entre com a matriz: \n\n");
-
     scanf("%d %d",&numl,&numc);
 
     struct matriz ** linha;
@@ -238,7 +234,6 @@ void main(){
 
         if (opcao == 2){
             excluir(numl,linha);
-
             free(linha);
 
             printf("\nA matriz foi apagada");
@@ -451,6 +446,8 @@ void main(){
 
         if (opcao == 9){
             fim = 2;
+            excluir(numl,linha);
+            free(linha);
         }
     }
     printf("\nPROGRAMA ENCERRADO");
