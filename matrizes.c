@@ -244,10 +244,12 @@ void main(){
                         while(aux != NULL){
                             aux2 = aux;
                             aux = aux->prox;
-                            if(aux->col == pc){
-                                aux2->prox = aux->prox;
-                                free(aux);
-                                aux=NULL;
+                            if(aux!=NULL){
+                                if(aux->col == pc){
+                                    aux2->prox = aux->prox;
+                                    free(aux);
+                                    aux=NULL;
+                                }
                             }
                         }
                     }
