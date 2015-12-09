@@ -23,13 +23,22 @@ struct matriz * criacelula(int dado, int coluna){
         return(novo);
 }
 
-void imprime(struct matriz * celula,int linha){
+void imprime(struct matriz * celula,int colant, int numc){
 
+    int i;
     if(celula==NULL){
+        if (colant!=numc){
+            for(i=0;i<numc-colant;i++){
+                printf("0\t");
+            }
+        }
         return;
     }
-    printf("\t%d(%d)(%d)",celula->valor,linha+1,celula->col);
-    imprime(celula->prox,linha);
+    for(i=1;i<celula->col-colant;i++){
+            printf("0\t");
+    }
+    printf("%d\t",celula->valor);
+    imprime(celula->prox,celula->col,numc);
 }
 
 void consulta(struct matriz * celula, int coluna, int linha){
@@ -52,17 +61,20 @@ void excluir(int numlin ,struct matriz *linha[]){
 
     int i;
     for(i=0; i<numlin; i++){
-            if(linha[i] == NULL)
+            if(linha[i] == NULL){
                 continue;
+            }
             else{
                 aux = linha[i]->prox;
                 free(linha[i]);
                 linha[i] = NULL;
-                while(aux->prox !=NULL){
-                    aux2 = aux->prox;
-                    free(aux);
-                    aux = NULL;
-                    aux = aux2;
+                if(aux!=NULL){
+                    while(aux->prox !=NULL){
+                        aux2 = aux->prox;
+                        free(aux);
+                        aux = NULL;
+                        aux = aux2;
+                    }
                 }
                 free(aux);
                 aux = NULL;
@@ -149,14 +161,15 @@ int menu(){ //funcao que abre o menu de opções e retorna a desejada
 
         //imprime todas as opções na tela
 		printf("\nDigite o n%cmero da op%c%co que deseja realizar com sua matriz:",163,135,198);
-		printf("\nOp%c%co 1: Exclus%co",135,198,198);
-		printf("\nOp%c%co 2: Consulta de Valor",135,198);
-		printf("\nOp%c%co 3: Soma de Linha",135,198);
-		printf("\nOp%c%co 4: Soma de Coluna",135,198);
-		printf("\nOp%c%co 5: Atribui%c%co de Valor",135,198,135,198);
-		printf("\nOp%c%co 6: Determinante",135,198);
-		printf("\nOp%c%co 7: Resolver Sistema Linear",135,198);
-		printf("\nOp%c%co 8: Encerrar o Programa",135,198);
+		printf("\nOp%c%co 1: Imprimir a Matriz",135,198);
+		printf("\nOp%c%co 2: Exclus%co",135,198,198);
+		printf("\nOp%c%co 3: Consulta de Valor",135,198);
+		printf("\nOp%c%co 4: Soma de Linha",135,198);
+		printf("\nOp%c%co 5: Soma de Coluna",135,198);
+		printf("\nOp%c%co 6: Atribui%c%co de Valor",135,198,135,198);
+		printf("\nOp%c%co 7: Determinante",135,198);
+		printf("\nOp%c%co 8: Resolver Sistema Linear",135,198);
+		printf("\nOp%c%co 9: Encerrar o Programa",135,198);
 		printf("\n\nOp%c%co escolhida: ",135,198);
 
 		int opcao;
@@ -173,9 +186,13 @@ int menu(){ //funcao que abre o menu de opções e retorna a desejada
 void main(){
 
     int numl,numc,i,j,novo;
+
+    printf("\nDigite a quantidade de linhas, da colunas, em seguida, entre com a matriz: \n\n");
+
     scanf("%d %d",&numl,&numc);
 
-    struct matriz * linha[numl];
+    struct matriz ** linha;
+    linha = (struct matriz **)malloc(numl*sizeof(struct matriz*));
 
     for(i=0;i<numl;i++){
         linha[i] = NULL;
@@ -202,26 +219,63 @@ void main(){
         }
     }
 
-    for(i=0;i<numl;i++){
-        printf("\n\nLinha %d:",i+1);
-        imprime(linha[i],i);
-    }
-
-    printf("\n");
     int opcao;
     int pl,pc,busca,k=0,det;
     float dif,y;
     int fim = 1;
+
     while(fim!=2){
 
         printf("\n\n");
         opcao = menu();
 
         if (opcao == 1){
-            excluir(numl,linha);
+            for(i=0;i<numl;i++){
+                imprime(linha[i],0,numc);
+                printf("\n");
+            }
         }
 
         if (opcao == 2){
+            excluir(numl,linha);
+
+            free(linha);
+
+            printf("\nA matriz foi apagada");
+            printf("\nDigite a quantidade de linhas, da colunas, em seguida, entre com a matriz: \n\n");
+
+            scanf("%d %d",&numl,&numc);
+
+            linha = (struct matriz **)malloc(numl*sizeof(struct matriz*));
+
+            for(i=0;i<numl;i++){
+                linha[i] = NULL;
+            }
+
+            for(i=0;i<numl;i++){
+                aux2 = NULL;
+                for(j=0;j<numc;j++){
+                        scanf("%d",&novo);
+                        if(novo!=0){
+                            aux = criacelula(novo,j+1);
+
+                            if(linha[i]==NULL){
+                                linha[i] = aux;
+                            }
+                            else{
+                                aux2 = linha[i];
+                                while(aux2->prox != NULL){
+                                    aux2 = aux2->prox;
+                                }
+                                aux2->prox = aux;
+                            }
+                        }
+                }
+            }
+
+        }
+
+        if (opcao == 3){
             printf("\nDigite as posi%c%ces da linha e da coluna: ",135,198);
             scanf("%d %d",&pl,&pc);
             aux = linha[pl-1];
@@ -233,7 +287,7 @@ void main(){
             }
         }
 
-        if (opcao == 3){
+        if (opcao == 4){
             printf("\nDigite a linha que deseja somar: ");
             scanf("%d",&pl);
             if(pl>0 && pl<=numl){
@@ -244,7 +298,7 @@ void main(){
             }
         }
 
-        if (opcao == 4){
+        if (opcao == 5){
             printf("\nDigite a coluna que deseja somar: ");
             scanf("%d",&pc);
             busca = 0;
@@ -259,7 +313,7 @@ void main(){
             }
         }
 
-        if (opcao == 5){
+        if (opcao == 6){
             printf("\nDigite as posi%c%ces da linha, da coluna, e o valor a ser atribuido: ",135,198);
             scanf("%d %d %d",&pl,&pc,&busca);
             if(pl<=numl && pl>0 && pc>0 && pc<=numc){
@@ -328,11 +382,11 @@ void main(){
             }
         }
 
-        if (opcao == 6){
+        if (opcao == 7){ //determinante
 
         }
 
-        if (opcao == 7){
+        if (opcao == 8){
             det = 0;
             for(i=0;i<numl;i++){
                 if(buscacol(linha[i],i+1)>=0){
@@ -369,7 +423,7 @@ void main(){
                         for(i=0;i<numl;i++){
                             y = x[i];
                             x[i] = gauss(linha[i],numc,i,x,1,0);
-                            if(x[i]<0.000001){
+                            if(x[i]<0.000001 && x[i]> -0.000001){
                                 x[i] = 0.0;
                             }
                             y = x[i] - y;
@@ -395,17 +449,10 @@ void main(){
             }
         }
 
-        if (opcao == 8){
+        if (opcao == 9){
             fim = 2;
         }
-
-        for(i=0;i<numl;i++){
-            printf("\n\nLinha %d:",i+1);
-            imprime(linha[i],i);
-        }
-
     }
-
     printf("\nPROGRAMA ENCERRADO");
     getch();	            //pausa para leitura da tela
 }
