@@ -129,6 +129,22 @@ float gauss(struct matriz * celula , int numc, int i, float x[],int quociente,fl
     return(gauss(celula->prox,numc,i,x,quociente,soma));
 }
 
+int somalinha2(struct matriz * linha,int soma){
+
+    if(linha==NULL){
+        return(soma);
+    }
+    else{
+        if(linha->valor<0){
+            soma = soma - linha->valor;
+        }
+        else{
+            soma = soma + linha->valor;
+        }
+        return(somalinha2(linha->prox,soma));
+    }
+}
+
 int menu(){ //funcao que abre o menu de opções e retorna a desejada
 
         //imprime todas as opções na tela
@@ -193,7 +209,8 @@ void main(){
 
     printf("\n");
     int opcao;
-    int pl,pc,busca,k=0;
+    int pl,pc,busca,k=0,det;
+    float dif,y;
     int fim = 1;
     while(fim!=2){
 
@@ -316,28 +333,66 @@ void main(){
         }
 
         if (opcao == 7){
+            det = 0;
+            for(i=0;i<numl;i++){
+                if(buscacol(linha[i],i+1)>=0){
+                        if(buscacol(linha[i],numc)>=0){
+                            det = somalinha2(linha[i],0) - 2*buscacol(linha[i],i+1) - buscacol(linha[i],numc);
+                        }
+                        else{
+                            det = somalinha2(linha[i],0) - 2*buscacol(linha[i],i+1) + buscacol(linha[i],numc);
+                        }
+                }
+                else{
+                        if(buscacol(linha[i],numc)>=0){
+                            det = somalinha2(linha[i],0) + 2*buscacol(linha[i],i+1) - buscacol(linha[i],numc);
+                        }
+                        else{
+                            det = somalinha2(linha[i],0) + 2*buscacol(linha[i],i+1) + buscacol(linha[i],numc);
+                        }
+                }
+            }
+
+            if(det<=0){
                 if(numc!=numl+1){
                     printf("\nEssa matriz n%co pode ser resolvida por Gauss-Seidel",198);
                 }
-                //fazer a condicao da diagonal dominante
                 else{
                     float * x;
                     x = (float*)malloc(numc*sizeof(float));
                     for(i=0;i<numc;i++){
                         x[i] = 0;
                     }
-                    for(j=0;j<3*numl;j++){
+                    for(j=0;j<100;j++){
+                        dif = 0;
+                        y = 0;
                         for(i=0;i<numl;i++){
+                            y = x[i];
                             x[i] = gauss(linha[i],numc,i,x,1,0);
+                            if(x[i]<0.000001){
+                                x[i] = 0.0;
+                            }
+                            y = x[i] - y;
+                            if(y<0){
+                                y = -y;
+                            }
+                            if(y > dif){
+                                dif = y;
+                            }
+                            if(dif<0.000001){
+                                j = 100;
+                            }
                         }
-                        for(i=0;i<numl;i++){
-                        printf("\nx[%d] = %f",i+1,x[i]);
-                        }
-                        printf("\n");
                     }
-
+                    for(i=0;i<numl;i++){
+                            printf("\nx[%d] = %g",i+1,x[i]);
+                    }
+                    free(x);
                 }
-
+            }
+            else{
+                printf("\nEssa matriz n%co pode ser resolvida por Gauss-Seidel",198);
+            }
         }
 
         if (opcao == 8){
