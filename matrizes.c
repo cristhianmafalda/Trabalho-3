@@ -112,6 +112,22 @@ struct matriz * buscacel(struct matriz * celula, int coluna){
     }
 }
 
+float gauss(struct matriz * celula , int numc, int i, float x[],int quociente,float soma){
+
+    if(celula == NULL){
+        return(soma/quociente);
+    }
+    else if(celula->col == i+1){
+        quociente = celula->valor;
+    }
+    else if (celula->col == numc){
+        soma = soma + celula->valor;
+    }
+    else{
+        soma = soma - (celula->valor*x[celula->col-1]);
+    }
+    return(gauss(celula->prox,numc,i,x,quociente,soma));
+}
 
 int menu(){ //funcao que abre o menu de opções e retorna a desejada
 
@@ -300,6 +316,27 @@ void main(){
         }
 
         if (opcao == 7){
+                if(numc!=numl+1){
+                    printf("\nEssa matriz n%co pode ser resolvida por Gauss-Seidel",198);
+                }
+                //fazer a condicao da diagonal dominante
+                else{
+                    float * x;
+                    x = (float*)malloc(numc*sizeof(float));
+                    for(i=0;i<numc;i++){
+                        x[i] = 0;
+                    }
+                    for(j=0;j<3*numl;j++){
+                        for(i=0;i<numl;i++){
+                            x[i] = gauss(linha[i],numc,i,x,1,0);
+                        }
+                        for(i=0;i<numl;i++){
+                        printf("\nx[%d] = %f",i+1,x[i]);
+                        }
+                        printf("\n");
+                    }
+
+                }
 
         }
 
