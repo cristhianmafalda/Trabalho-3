@@ -174,7 +174,7 @@ int menu(){ //funcao que abre o menu de opções e retorna a desejada
 
 		int opcao;
 		scanf("%d",&opcao); //le a opcao escolhida
-		while(opcao<1||opcao>8){ //confere a coerencia e refaz se necessario
+		while(opcao<1||opcao>9){ //confere a coerencia e refaz se necessario
             printf("\n\nEscolha uma op%c%co existente",135,198);
             printf("\n\nOp%c%co escolhida: ",135,198);
             scanf("%d",&opcao);
