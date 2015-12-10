@@ -186,6 +186,10 @@ void main(){
     int numl,numc,i,j,novo;
     printf("\nDigite a quantidade de linhas, da colunas, em seguida, entre com a matriz: \n\n");
     scanf("%d %d",&numl,&numc);
+    while(numl<=0 || numc<=0){
+        printf("\nValores incoerentes para quantidade de linhas e colunas\nEntre com novos valores ambos maiores que zero, depois a matriz:\n\n");
+        scanf("%d %d",&numl,&numc);
+    }
 
     struct matriz ** linha;
     linha = (struct matriz **)malloc(numl*sizeof(struct matriz*));
@@ -240,6 +244,10 @@ void main(){
             printf("\nDigite a quantidade de linhas, da colunas, em seguida, entre com a matriz: \n\n");
 
             scanf("%d %d",&numl,&numc);
+            while(numl<=0 || numc<=0){
+                printf("\nValores incoerentes para quantidade de linhas e colunas\nEntre com novos valores ambos maiores que zero, depois a matriz:\n\n");
+                scanf("%d %d",&numl,&numc);
+            }
 
             linha = (struct matriz **)malloc(numl*sizeof(struct matriz*));
 
@@ -340,19 +348,14 @@ void main(){
                     aux = NULL;
                     aux3 = linha[pl-1];
                     aux = buscacel(linha[pl-1],pc);
-                    printf("\nEndereco aux: %d",aux);
-                    printf("\nEndereco aux3: %d",aux3);
                     if(aux!=NULL){
                         if(aux->col==pc){
                             aux->valor = busca;
                         }
                         else if (aux!=aux3){
                             aux2 = criacelula(busca,pc);
-                            printf("\nEndereco aux2: %d",aux2);
                             aux2->prox = aux;
-                            printf("\nEndereco aux2->prox: %d",aux2->prox);
                             aux3->prox = aux2;
-                            printf("\nEndereco aux3->prox: %d",aux3->prox);
                         }
                         else {
                             aux2 = criacelula(busca,pc);
@@ -362,11 +365,8 @@ void main(){
                     }
                     else if (aux != aux3){
                         aux2 = criacelula(busca,pc);
-                        printf("\nEndereco aux2: %d",aux2);
                         aux2->prox = aux;
-                        printf("\nEndereco aux2->prox: %d",aux2->prox);
                         aux3->prox = aux2;
-                        printf("\nEndereco aux3->prox: %d",aux3->prox);
                     }
                     else{
                         aux2 = criacelula(busca,pc);
