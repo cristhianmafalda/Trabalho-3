@@ -1,93 +1,90 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-struct matriz{
-    int valor;
-    int col;
-    struct matriz * prox;
+struct matriz{                  //declaração da estrutura de cada célula das listas encadeadas
+    int valor;                  //valor é o inteiro correspondente com a matriz
+    int col;                    //posição da coluna desse elemento na matriz
+    struct matriz * prox;       //ponteiro para o próximo da linha
 };
 
-struct matriz * aux;
+struct matriz * aux;            //aux,aux2,aux3 são variáveis que irão auxiliar nas atribuições de ponteiros
 struct matriz * aux2;
 struct matriz * aux3;
 
-struct matriz * criacelula(int dado, int coluna){
+struct matriz * criacelula(int dado, int coluna){   //função que cria uma célula nova e retorna o ponteiro para ela
 
         struct matriz * novo;
-        novo = (struct matriz*)malloc(sizeof(struct matriz));
-        novo->valor = dado;
+        novo = (struct matriz*)malloc(sizeof(struct matriz));   //aloca a nova célula
+        novo->valor = dado;                                     //preenche o valor e a coluna
         novo->col = coluna;
-        novo->prox = NULL;
+        novo->prox = NULL;                                      //deixa o ponteiro aterrado
         return(novo);
 }
 
-void imprime(struct matriz * celula,int colant, int numc){
+void imprime(struct matriz * celula,int colant, int numc){ //função que imprime a matriz esparsa
 
     int i;
-    if(celula==NULL){
-        if (colant!=numc){
+    if(celula==NULL){                   //verifica quando chega ao ultimo valor não nulo da linha
+        if (colant!=numc){              //verifica quantos zeros ainda falta imprimir
             for(i=0;i<numc-colant;i++){
-                printf("0\t");
+                printf("0\t");          //imprime os zeros restantes
             }
         }
         return;
     }
-    for(i=1;i<celula->col-colant;i++){
+    for(i=1;i<celula->col-colant;i++){  //verifica zeros entre o valor anterior e o atual
             printf("0\t");
     }
-    printf("%d\t",celula->valor);
-    imprime(celula->prox,celula->col,numc);
+    printf("%d\t",celula->valor);       //imprime o valor não nulo
+    imprime(celula->prox,celula->col,numc); //recursivo para a célula seguinte
 }
 
-void consulta(struct matriz * celula, int coluna, int linha){
+void consulta(struct matriz * celula, int coluna, int linha){ //função que recebe uma posição e imprime o valor dela
 
-    if(celula == NULL){
+    if(celula == NULL){             //se chegarmos ao ultimo ponteiro, o valor é zero
         printf("\nValor da posi%c%co (%d,%d) : 0",135,198,linha,coluna);
     }
-    else if(celula->col > coluna){
+    else if(celula->col > coluna){  //se passarmos da coluna da posição pedida sem te-lo achado, ele é zero
         printf("\nValor da posi%c%co (%d,%d) : 0",135,198,linha,coluna);
     }
-    else if(celula->col == coluna){
+    else if(celula->col == coluna){ //se a coluna do elemento for igual a posição pedida, imprime o valor
         printf("\nValor da posi%c%co (%d,%d) : %d",135,198,linha,coluna,celula->valor);
     }
     else{
-        consulta(celula->prox,coluna,linha);
+        consulta(celula->prox,coluna,linha);    //recursivo para a célula seguinte
     }
 }
 
-int consulta2(struct matriz * celula, int coluna, int linha){
+int consulta2(struct matriz * celula, int coluna){   //função que recebe uma posição e retorna o valor dela
 
-    if(celula == NULL){
+    if(celula == NULL){             //se chegarmos ao ultimo ponteiro, o valor é zero
         return(0);
     }
-    else if(celula->col > coluna){
+    else if(celula->col > coluna){  //se passarmos da coluna da posição pedida sem te-lo achado, ele é zero
         return(0);
     }
-    else if(celula->col == coluna){
+    else if(celula->col == coluna){ //se a coluna do elemento for igual a posição pedida, imprime o valor
         return(celula->valor);
     }
     else{
-        return(consulta2(celula->prox,coluna,linha))  ;
+        return(consulta2(celula->prox,coluna));   //recursivo para a célula seguinte
     }
 }
 
-void excluir(int numlin ,struct matriz *linha[]){
+void excluir(int numlin ,struct matriz *linha[]){   //função que exclui as células de uma matriz esparsa
 
     int i;
     for(i=0; i<numlin; i++){
-            if(linha[i] == NULL){
-                continue;
-            }
-            else{
-                aux = linha[i]->prox;
-                free(linha[i]);
-                linha[i] = NULL;
+            if(linha[i] != NULL){
+                aux = linha[i]->prox;           //aux armazena a prox célula
+                free(linha[i]);                 //libera a célula atual
+                linha[i] = NULL;                //linha deve ser aterrado
                 if(aux!=NULL){
-                    while(aux->prox !=NULL){
-                        aux2 = aux->prox;
-                        free(aux);
+                    while(aux->prox !=NULL){    //repete até a linha não ter mais valores não nulos
+                        aux2 = aux->prox;       //aux2 é quem armazena a seguinte agora
+                        free(aux);              //aux é liberado e aterrado
                         aux = NULL;
-                        aux = aux2;
+                        aux = aux2;             //aux recebe a proxima célula
                     }
                 }
                 free(aux);
@@ -96,98 +93,82 @@ void excluir(int numlin ,struct matriz *linha[]){
     }
 }
 
-void somalinha(struct matriz*linha,int soma){
+void somalinha(struct matriz*linha,int soma){       //função que recebe uma linha, e soma os valores dela
 
-    if(linha==NULL){
+    if(linha==NULL){                                //quando chegar no ponteiro aterrado, todos oa valores foram somados
         printf("\nSoma = %d",soma);
         return;
     }
     else{
-        soma = soma + linha->valor;
-        return(somalinha(linha->prox,soma));
+        soma = soma + linha->valor;                 //senão, soma o valor atual a variável soma
+        return(somalinha(linha->prox,soma));        //e segue para a célula seguinte
     }
 }
 
-int buscacol(struct matriz * celula, int coluna){
+struct matriz * buscacel(struct matriz * celula, int coluna){ //função de busca que retorna o ponteiro da célula
 
-    if(celula == NULL){
-        return (0);
-    }
-    else if(celula->col > coluna){
-        return (0);
-    }
-    else if(celula->col == coluna){
-        return (celula->valor);
-    }
-    else{
-        return (buscacol(celula->prox,coluna));
-    }
-}
-
-struct matriz * buscacel(struct matriz * celula, int coluna){
-
-    if(celula == NULL){
+    if(celula == NULL){                 //se chegarmos ao ultimo ponteiro, ele mesmo retorna
         return (celula);
     }
-    else if(celula->col >= coluna){
+    else if(celula->col >= coluna){     //se ce passarmos da coluna desejada, ou chegarmos nela, retorna o ponteiro dela
         return (celula);
     }
     else{
-        aux3 = celula;
-        return (buscacel(celula->prox,coluna));
+        aux3 = celula;                  //aux3 será usado como anterior a célula
+        return (buscacel(celula->prox,coluna));     //recursivo para a sequencia
     }
 }
 
-float gauss(struct matriz * celula , int numc, int i, float x[],int quociente,float soma){
+float gauss(struct matriz * celula , int numc, int i, float x[],int quociente,float soma){  //função soma de linha para gauss-seidel
 
-    if(celula == NULL){
+    if(celula == NULL){                 //quando chegar ao fim da linha, retorna a soma dividida pelo quociente
         return(soma/quociente);
     }
     else if(celula->col == i+1){
-        quociente = celula->valor;
+        quociente = celula->valor;      //o quociente será o coeficiente da solução isolada nessa equação
     }
-    else if (celula->col == numc){
+    else if (celula->col == numc){      //soma o valor final sem multiplicar por nenhuma solução
         soma = soma + celula->valor;
     }
     else{
-        soma = soma - (celula->valor*x[celula->col-1]);
+        soma = soma - (celula->valor*x[celula->col-1]); //soma os demais valores multiplicados porsuas respectivas soluções
     }
-    return(gauss(celula->prox,numc,i,x,quociente,soma));
+    return(gauss(celula->prox,numc,i,x,quociente,soma));    //chama a célula seguinte
 }
 
-int somalinha2(struct matriz * linha,int soma){
+int somalinha2(struct matriz * linha,int soma){ //função que soma os módulos dos valores de uma linha
 
-    if(linha==NULL){
+    if(linha==NULL){    //chegando no último ponteiro, a soma ja foi feita
         return(soma);
     }
     else{
         if(linha->valor<0){
-            soma = soma - linha->valor;
+            soma = soma - linha->valor; //se o valor for negativo, subtrai
         }
         else{
-            soma = soma + linha->valor;
+            soma = soma + linha->valor; //senão, soma
         }
-        return(somalinha2(linha->prox,soma));
+        return(somalinha2(linha->prox,soma));       //chama a célula seguinte
     }
 }
 
-float ** criamatriz(int numl, int numc){
-      float **novo;
+float ** criamatriz(int numl, int numc){    //função que aloca uma matriz dinamicamente
+      float **novo;                         //cria a matriz
       int i;
-      novo=(float **)malloc(numl*sizeof(float*));
+      novo=(float **)malloc(numl*sizeof(float*));       //aloca os espaço para as linhas
       for (i=0;i<numl;i++){
-          novo[i]=(float*)malloc(numc*sizeof(float));
+          novo[i]=(float*)malloc(numc*sizeof(float));   //aloca espaço para as colunas em cada linha
       }
-  return(novo);
+  return(novo); //retorna o ponteiro inicial
 }
 
-float ** liberamatriz(int numl, int numc, float ** matriz){
+float ** liberamatriz(int numl, int numc, float ** auxdet){ //função que libera uma matriz alocada dinamicamente
   int i;
   for(i=0;i<numc;i++){
-        free(matriz[i]);
+        free(auxdet[i]);    //libera as colunas de cada linhas
   }
-  free(matriz);
-  return(NULL);
+  free(auxdet);             //libera as linhas
+  return(NULL);             //deixa o ponteiro da main aterrado caso precise usar outra vez
 }
 
 int menu(){ //funcao que abre o menu de opções e retorna a desejada
@@ -218,66 +199,66 @@ int menu(){ //funcao que abre o menu de opções e retorna a desejada
 
 void main(){
 
-    int numl,numc,i,j,novo;
+    int numl,numc,i,j,novo;                 //decalração do numeor de linhas e contadores
     printf("\nDigite a quantidade de linhas, da colunas, em seguida, entre com a matriz: \n\n");
-    scanf("%d %d",&numl,&numc);
-    while(numl<=0 || numc<=0){
+    scanf("%d %d",&numl,&numc);             //le o numero de linhas e colunas
+    while(numl<=0 || numc<=0){              //confere e refaz se necessário
         printf("\nValores incoerentes para quantidade de linhas e colunas\nEntre com novos valores ambos maiores que zero, depois a matriz:\n\n");
         scanf("%d %d",&numl,&numc);
     }
 
-    struct matriz ** linha;
+    struct matriz ** linha;                 //aloca o ponteiro principal da matriz
     linha = (struct matriz **)malloc(numl*sizeof(struct matriz*));
 
-    for(i=0;i<numl;i++){
+    for(i=0;i<numl;i++){                    //garantimos que todos os ponteiros de linha iniciem aterrados
         linha[i] = NULL;
     }
 
-    for(i=0;i<numl;i++){
+    for(i=0;i<numl;i++){                    //vamos adicionar os valores não nulos para cada linha
         aux2 = NULL;
-        for(j=0;j<numc;j++){
+        for(j=0;j<numc;j++){                //e cada coluna
                 scanf("%d",&novo);
-                if(novo!=0){
-                    aux = criacelula(novo,j+1);
+                if(novo!=0){                //só serão adicionados valores diferentes de zero
+                    aux = criacelula(novo,j+1);     //nova célula é criada
 
                     if(linha[i]==NULL){
-                        linha[i] = aux;
+                        linha[i] = aux;     //linha irá apontar para o novo valor se ela estiver aterrada
                     }
                     else{
-                        aux2 = linha[i];
-                        while(aux2->prox != NULL){
+                        aux2 = linha[i];    //senão, nós buscaremos o ultimo ponteiro da linha para adicionar...
+                        while(aux2->prox != NULL){  //... visto que a entrada está ordenada por coluna dentro de cada linha
                             aux2 = aux2->prox;
                         }
-                        aux2->prox = aux;
+                        aux2->prox = aux;   //aux2 é o anterior e aponta para aux, que é o novo
                     }
                 }
         }
     }
 
     int pl,pc,busca,k=0,det,cont=0,opcao,fim = 1;
-    float dif,y,troca,fator;
-    float ** matriz;
+    float dif,y,troca,fator;                //todas variáveis declaradas serão necessárias para execução das funções abaixo
+    float ** auxdet;
 
-    while(fim!=2){
+    while(fim!=2){  //condição para encerrar programa
 
         printf("\n\n");
-        opcao = menu();
+        opcao = menu(); //recebe a opção do usuário
 
-        if (opcao == 1){
-            for(i=0;i<numl;i++){
+        if (opcao == 1){                    //impressão
+            for(i=0;i<numl;i++){            //imprime cada linha de uma vez chamando a função imprime
                 imprime(linha[i],0,numc);
                 printf("\n");
             }
         }
 
-        if (opcao == 2){
-            excluir(numl,linha);
-            free(linha);
+        if (opcao == 2){                    //exclusão
+            excluir(numl,linha);            //chama a função que exclui as celulas
+            free(linha);                    //libera as linhas
 
-            printf("\nA matriz foi apagada");
+            printf("\nA matriz foi apagada");   //necessita entrar com uma nova matriz para continuar
             printf("\nDigite a quantidade de linhas, da colunas, em seguida, entre com a matriz: \n\n");
 
-            scanf("%d %d",&numl,&numc);
+            scanf("%d %d",&numl,&numc);     //repete todo o processo de adicionar matriz descrito no inicio da main, logo, não será comentado
             while(numl<=0 || numc<=0){
                 printf("\nValores incoerentes para quantidade de linhas e colunas\nEntre com novos valores ambos maiores que zero, depois a matriz:\n\n");
                 scanf("%d %d",&numl,&numc);
@@ -312,38 +293,38 @@ void main(){
 
         }
 
-        if (opcao == 3){
+        if (opcao == 3){                    //consulta
             printf("\nDigite as posi%c%ces da linha e da coluna: ",135,198);
-            scanf("%d %d",&pl,&pc);
+            scanf("%d %d",&pl,&pc);         //le a posicao desejada
             aux = linha[pl-1];
-            if(pl<=numl && pl>0 && pc>0 && pc<=numc){
-                consulta(linha[pl-1],pc,pl);
+            if(pl<=numl && pl>0 && pc>0 && pc<=numc){   //avalia a coerencia da posição
+                consulta(linha[pl-1],pc,pl);    //chama a posição que imprime o valor da célula de posição pedida
             }
             else {
                 printf("\nA posi%c%co escolhida n%co est%c definida nessa matriz",135,198,198,160);
             }
         }
 
-        if (opcao == 4){
+        if (opcao == 4){                    //soma linha
             printf("\nDigite a linha que deseja somar: ");
-            scanf("%d",&pl);
-            if(pl>0 && pl<=numl){
-                somalinha(linha[pl-1],0);
+            scanf("%d",&pl);                // le a linha desejada
+            if(pl>0 && pl<=numl){           //avalia coerencia
+                somalinha(linha[pl-1],0);   //chama a função que realiza a soma
             }
             else {
                 printf("\nA linha escolhida n%co existe nessa matriz",198);
             }
         }
 
-        if (opcao == 5){
+        if (opcao == 5){                    //soma coluna
             printf("\nDigite a coluna que deseja somar: ");
-            scanf("%d",&pc);
+            scanf("%d",&pc);                //le a coluna
             busca = 0;
-            if(pc>0 && pc<=numc){
-                 for(i=0;i<numl;i++){
-                        busca = busca + buscacol(linha[i],pc);
+            if(pc>0 && pc<=numc){           //avalia coerencia
+                 for(i=0;i<numl;i++){       //em cada linha, procuramos a coluna
+                        busca = busca + consulta2(linha[i],pc);//acumulamos o valor em busca
                  }
-                 printf("\nSoma = %d",busca);
+                 printf("\nSoma = %d",busca);   //imprime a soma
             }
             else {
                 printf("\nA coluna escolhida n%co existe nessa matriz",198);
@@ -414,32 +395,32 @@ void main(){
         if (opcao == 7){
 
             if(numc==numl){
-                matriz = criamatriz(numl,numc);
+                auxdet = criamatriz(numl,numc);
 
                 for(i=0;i<numl;i++){
                     for(j=0;j<numl;j++){
-                            matriz[i][j] = consulta2(linha[i],j+1,i);
+                            auxdet[i][j] = consulta2(linha[i],j+1);
                     }
                 }
                 for(i=0;i< numl-1;i++){
-                    if(matriz[i][i]==0){
+                    if(auxdet[i][i]==0){
                         for(k=i;k<numl;k++){
-                            if(matriz[k][i] != 0){
+                            if(auxdet[k][i] != 0){
                                 for(j=0;j<numl;j++){
-                                    troca = matriz[i][j];
-                                    matriz[i][j] = matriz[k][j];
-                                    matriz[k][j] = troca;
+                                    troca = auxdet[i][j];
+                                    auxdet[i][j] = auxdet[k][j];
+                                    auxdet[k][j] = troca;
                                 }
                                 k = numl;
                             }
                         }
                         cont = cont +1;
                     }
-                    if(matriz[i][i] != 0){
+                    if(auxdet[i][i] != 0){
                         for(k=i+1;k <numl;k++){
-                            fator = -matriz[k][i]/matriz[i][i];
+                            fator = -auxdet[k][i]/auxdet[i][i];
                             for(j=i;j<numl;j++){
-                                matriz[k][j] = matriz[k][j]+(fator*matriz[i][j]);
+                                auxdet[k][j] = auxdet[k][j]+(fator*auxdet[i][j]);
                             }
                         }
                     }
@@ -447,7 +428,7 @@ void main(){
 
                 troca = 1.0;
                 for(i=0;i<numl;i++){
-                    troca = troca*matriz[i][i];
+                    troca = troca*auxdet[i][i];
                 }
 
                 printf("\nDeterminante : ");
@@ -462,7 +443,7 @@ void main(){
                 else{
                     printf("0\n");
                 }
-                matriz = liberamatriz(numl,numc,matriz);
+                auxdet = liberamatriz(numl,numc,auxdet);
             }
             else{
              printf("\nEssa matriz n%co possui determinante",198);
@@ -472,20 +453,20 @@ void main(){
         if (opcao == 8){
             det = 0;
             for(i=0;i<numl;i++){
-                if(buscacol(linha[i],i+1)>=0){
-                        if(buscacol(linha[i],numc)>=0){
-                            det = somalinha2(linha[i],0) - 2*buscacol(linha[i],i+1) - buscacol(linha[i],numc);
+                if(consulta2(linha[i],i+1)>=0){
+                        if(consulta2(linha[i],numc)>=0){
+                            det = somalinha2(linha[i],0) - 2*consulta2(linha[i],i+1) - consulta2(linha[i],numc);
                         }
                         else{
-                            det = somalinha2(linha[i],0) - 2*buscacol(linha[i],i+1) + buscacol(linha[i],numc);
+                            det = somalinha2(linha[i],0) - 2*consulta2(linha[i],i+1) + consulta2(linha[i],numc);
                         }
                 }
                 else{
-                        if(buscacol(linha[i],numc)>=0){
-                            det = somalinha2(linha[i],0) + 2*buscacol(linha[i],i+1) - buscacol(linha[i],numc);
+                        if(consulta2(linha[i],numc)>=0){
+                            det = somalinha2(linha[i],0) + 2*consulta2(linha[i],i+1) - consulta2(linha[i],numc);
                         }
                         else{
-                            det = somalinha2(linha[i],0) + 2*buscacol(linha[i],i+1) + buscacol(linha[i],numc);
+                            det = somalinha2(linha[i],0) + 2*consulta2(linha[i],i+1) + consulta2(linha[i],numc);
                         }
                 }
             }
@@ -532,10 +513,10 @@ void main(){
             }
         }
 
-        if (opcao == 9){
-            fim = 2;
-            excluir(numl,linha);
-            free(linha);
+        if (opcao == 9){                    //encerrar
+            fim = 2;                        // muda condição do while
+            excluir(numl,linha);            //exclui as celulas
+            free(linha);                    //libera linhas
         }
     }
     printf("\nPROGRAMA ENCERRADO");
