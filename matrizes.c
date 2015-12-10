@@ -55,6 +55,22 @@ void consulta(struct matriz * celula, int coluna, int linha){
     }
 }
 
+int consulta2(struct matriz * celula, int coluna, int linha){
+
+    if(celula == NULL){
+        return(0);
+    }
+    else if(celula->col > coluna){
+        return(0);
+    }
+    else if(celula->col == coluna){
+        return(celula->valor);
+    }
+    else{
+        return(consulta2(celula->prox,coluna,linha))  ;
+    }
+}
+
 void excluir(int numlin ,struct matriz *linha[]){
 
     int i;
@@ -377,8 +393,59 @@ void main(){
             }
         }
 
-        if (opcao == 7){ //determinante
+        if (opcao == 7){
 
+                float matriz[numl][numl];
+
+                for(i=0;i<numl;i++){
+                    for(j=0;j<numl;j++){
+                            matriz[i][j] = consulta2(linha[i],j+1,i);
+                    }
+                }
+
+                int cont = 0;
+                float troca,fator;
+                for(i = 0; i < numl - 1; i++){
+                    if(matriz[i][i] == 0){
+                        for(k = i; k < numl; k++){
+                            if(matriz[k][i] != 0){
+                                for(j = 0; j < numl; j++){
+                                    troca = matriz[i][j];
+                                    matriz[i][j] = matriz[k][j];
+                                    matriz[k][j] = troca;
+                                }
+                                k = numl;
+                            }
+                        }
+                        cont++;
+                    }
+                    if(matriz[i][i] != 0){
+                        for(k = i + 1; k < numl; k++){
+                            fator = -1.0 * matriz[k][i] /  matriz[i][i];
+                            for(j = i; j < numl; j++){
+                                matriz[k][j] = matriz[k][j] + (fator * matriz[i][j]);
+                            }
+                        }
+                    }
+                }
+
+                troca = 1.0;
+                for(i = 0; i < numl; i++){
+                    troca *= matriz[i][i];
+                }
+
+                printf("\nDeterminante = ");
+                if(troca!=0.0){
+                    if(cont % 2 == 0){
+                        printf("%g \n", troca);
+                    }
+                    else{
+                        printf("%g \n", -1.0 * troca);
+                    }
+                }
+                else{
+                    printf("0\n");
+                }
         }
 
         if (opcao == 8){
