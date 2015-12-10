@@ -171,6 +171,25 @@ int somalinha2(struct matriz * linha,int soma){
     }
 }
 
+float ** criamatriz(int numl, int numc){
+      float **novo;
+      int i;
+      novo=(float **)malloc(numl*sizeof(float*));
+      for (i=0;i<numl;i++){
+          novo[i]=(float*)malloc(numc*sizeof(float));
+      }
+  return(novo);
+}
+
+float ** liberamatriz(int numl, int numc, float ** matriz){
+  int i;
+  for(i=0;i<numc;i++){
+        free(matriz[i]);
+  }
+  free(matriz);
+  return(NULL);
+}
+
 int menu(){ //funcao que abre o menu de opções e retorna a desejada
 
         //imprime todas as opções na tela
@@ -235,10 +254,9 @@ void main(){
         }
     }
 
-    int opcao;
-    int pl,pc,busca,k=0,det;
-    float dif,y;
-    int fim = 1;
+    int pl,pc,busca,k=0,det,cont=0,opcao,fim = 1;
+    float dif,y,troca,fator;
+    float ** matriz;
 
     while(fim!=2){
 
@@ -395,21 +413,19 @@ void main(){
 
         if (opcao == 7){
 
-                float matriz[numl][numl];
+            if(numc==numl){
+                matriz = criamatriz(numl,numc);
 
                 for(i=0;i<numl;i++){
                     for(j=0;j<numl;j++){
                             matriz[i][j] = consulta2(linha[i],j+1,i);
                     }
                 }
-
-                int cont = 0;
-                float troca,fator;
-                for(i = 0; i < numl - 1; i++){
-                    if(matriz[i][i] == 0){
-                        for(k = i; k < numl; k++){
+                for(i=0;i< numl-1;i++){
+                    if(matriz[i][i]==0){
+                        for(k=i;k<numl;k++){
                             if(matriz[k][i] != 0){
-                                for(j = 0; j < numl; j++){
+                                for(j=0;j<numl;j++){
                                     troca = matriz[i][j];
                                     matriz[i][j] = matriz[k][j];
                                     matriz[k][j] = troca;
@@ -417,35 +433,40 @@ void main(){
                                 k = numl;
                             }
                         }
-                        cont++;
+                        cont = cont +1;
                     }
                     if(matriz[i][i] != 0){
-                        for(k = i + 1; k < numl; k++){
-                            fator = -1.0 * matriz[k][i] /  matriz[i][i];
-                            for(j = i; j < numl; j++){
-                                matriz[k][j] = matriz[k][j] + (fator * matriz[i][j]);
+                        for(k=i+1;k <numl;k++){
+                            fator = -matriz[k][i]/matriz[i][i];
+                            for(j=i;j<numl;j++){
+                                matriz[k][j] = matriz[k][j]+(fator*matriz[i][j]);
                             }
                         }
                     }
                 }
 
                 troca = 1.0;
-                for(i = 0; i < numl; i++){
-                    troca *= matriz[i][i];
+                for(i=0;i<numl;i++){
+                    troca = troca*matriz[i][i];
                 }
 
-                printf("\nDeterminante = ");
+                printf("\nDeterminante : ");
                 if(troca!=0.0){
                     if(cont % 2 == 0){
-                        printf("%g \n", troca);
+                        printf("%g\n",troca);
                     }
                     else{
-                        printf("%g \n", -1.0 * troca);
+                        printf("%g\n",-troca);
                     }
                 }
                 else{
                     printf("0\n");
                 }
+                matriz = liberamatriz(numl,numc,matriz);
+            }
+            else{
+             printf("\nEssa matriz n%co possui determinante",198);
+            }
         }
 
         if (opcao == 8){
