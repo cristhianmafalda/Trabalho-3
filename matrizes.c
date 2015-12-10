@@ -430,7 +430,6 @@ void main(){
                 for(i=0;i<numl;i++){
                     troca = troca*auxdet[i][i];     //o determinante é o produto dos valores da diagonal principal
                 }
-                printf("\nDeterminante : %g",troca);
                 printf("\nDeterminante : ");    // imprime o valor do determinante
                 if(troca!=0.0){                 //condição pra evitar sinal desnecessário
                     if(cont % 2 == 0){          //define o sinal do determinante
