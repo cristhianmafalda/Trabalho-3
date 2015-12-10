@@ -331,59 +331,59 @@ void main(){
             }
         }
 
-        if (opcao == 6){
+        if (opcao == 6){                    //atribuição
             printf("\nDigite as posi%c%ces da linha, da coluna, e o valor a ser atribuido: ",135,198);
-            scanf("%d %d %d",&pl,&pc,&busca);
-            if(pl<=numl && pl>0 && pc>0 && pc<=numc){
-                if(busca==0){
+            scanf("%d %d %d",&pl,&pc,&busca);           //le a posição e o valor novo
+            if(pl<=numl && pl>0 && pc>0 && pc<=numc){   //verifica a posição
+                if(busca==0){                           //caso em que vamos adicioanr um 0 a matriz
                     aux = NULL;
                     aux2 = NULL;
-                    if(linha[pl-1]!=NULL){
+                    if(linha[pl-1]!=NULL){              //so precisa fazer alguma coisa se a linha não for toda nula
                         aux = linha[pl-1];
                         aux2 = linha[pl-1];
-                        if(linha[pl-1]->col == pc){
-                            linha[pl-1] = linha[pl-1]->prox;
-                            free(aux);
+                        if(linha[pl-1]->col == pc){     //checa se o primeiro valor não nulo é o que vai ser trocado
+                            linha[pl-1] = linha[pl-1]->prox;    //se for, a linha aponta pro seguinte
+                            free(aux);                  //a posição é apagada da matriz e aux aterrado
                             aux = NULL;
                         }
-                        while(aux != NULL){
+                        while(aux != NULL){             //se não for o primeiro valor, vamos buscar o valor na matriz
                             aux2 = aux;
-                            aux = aux->prox;
+                            aux = aux->prox;            //aux2 é o anterior
                             if(aux!=NULL){
-                                if(aux->col == pc){
-                                    aux2->prox = aux->prox;
-                                    free(aux);
+                                if(aux->col == pc){     //quando achar a posição
+                                    aux2->prox = aux->prox; //aux2 aponta pra quem aux aponta
+                                    free(aux);              //libera aux a aterra
                                     aux=NULL;
                                 }
                             }
                         }
                     }
                 }
-                else{
+                else{                                   //caso em que vamos adiconar um valor não nulo
                     aux = NULL;
                     aux3 = linha[pl-1];
                     aux = buscacel(linha[pl-1],pc);
                     if(aux!=NULL){
-                        if(aux->col==pc){
+                        if(aux->col==pc){               //se a posição ja esta preenchida, apenas substituimos o valor
                             aux->valor = busca;
                         }
-                        else if (aux!=aux3){
-                            aux2 = criacelula(busca,pc);
-                            aux2->prox = aux;
+                        else if (aux!=aux3){            //se não, temos que encontrar a posição que ele ocuparia
+                            aux2 = criacelula(busca,pc);    //criar uma nova celula
+                            aux2->prox = aux;               //fazer o anterior apontar
                             aux3->prox = aux2;
                         }
-                        else {
+                        else {                          //caso em que a nova celula é inserida entre a linha e o primeiro não nulo da linha
                             aux2 = criacelula(busca,pc);
                             aux2->prox = aux;
                             linha[pl-1] = aux2;
                         }
                     }
-                    else if (aux != aux3){
+                    else if (aux != aux3){              //caso em que a buscacel retorna NULL para o meio da matriz
                         aux2 = criacelula(busca,pc);
                         aux2->prox = aux;
                         aux3->prox = aux2;
                     }
-                    else{
+                    else{                               //caso em que buscacel retorna NULL e a celula será o primeiro nao nulo da linha
                         aux2 = criacelula(busca,pc);
                         aux2->prox = aux;
                         linha[pl-1] = aux2;
@@ -392,22 +392,22 @@ void main(){
             }
         }
 
-        if (opcao == 7){
+        if (opcao == 7){                    //determinante
 
-            if(numc==numl){
-                auxdet = criamatriz(numl,numc);
-
-                for(i=0;i<numl;i++){
+            if(numc==numl){                 // checa se a matriz é quadrada
+                auxdet = criamatriz(numl,numc); //aloca uma matriz quadrada
+                cont = 0;                       //se não reinicializar, inverte o sinal do determinante em alguns casos
+                for(i=0;i<numl;i++){        // este ciclo for preenche um vetor bidimensional da matriz armazenada em linha
                     for(j=0;j<numl;j++){
                             auxdet[i][j] = consulta2(linha[i],j+1);
                     }
                 }
-                for(i=0;i< numl-1;i++){
-                    if(auxdet[i][i]==0){
+                for(i=0;i< numl-1;i++){     // tranforma a matriz em uma matriz triangular superior de determinante equivalente ao da matriz original
+                    if(auxdet[i][i]==0){    // neste caso, não é possível encontrar o fator, pois não há divisão por zero
                         for(k=i;k<numl;k++){
-                            if(auxdet[k][i] != 0){
+                            if(auxdet[k][i] != 0){  //realiza apenas quando a posição não for nula
                                 for(j=0;j<numl;j++){
-                                    troca = auxdet[i][j];
+                                    troca = auxdet[i][j];   //inverte as posições
                                     auxdet[i][j] = auxdet[k][j];
                                     auxdet[k][j] = troca;
                                 }
@@ -416,7 +416,7 @@ void main(){
                         }
                         cont = cont +1;
                     }
-                    if(auxdet[i][i] != 0){
+                    if(auxdet[i][i] != 0){  // neste caso é possível encontrar o fator
                         for(k=i+1;k <numl;k++){
                             fator = -auxdet[k][i]/auxdet[i][i];
                             for(j=i;j<numl;j++){
@@ -425,15 +425,15 @@ void main(){
                         }
                     }
                 }
-
-                troca = 1.0;
+                                        // nesta parte, a matriz já é triangular superior, logo, seu determinante é o produto da diagonal principal
+                troca = 1.0;            //troca deve ser inicalizado como 1 para não dar erro
                 for(i=0;i<numl;i++){
-                    troca = troca*auxdet[i][i];
+                    troca = troca*auxdet[i][i];     //o determinante é o produto dos valores da diagonal principal
                 }
-
-                printf("\nDeterminante : ");
-                if(troca!=0.0){
-                    if(cont % 2 == 0){
+                printf("\nDeterminante : %g",troca);
+                printf("\nDeterminante : ");    // imprime o valor do determinante
+                if(troca!=0.0){                 //condição pra evitar sinal desnecessário
+                    if(cont % 2 == 0){          //define o sinal do determinante
                         printf("%g\n",troca);
                     }
                     else{
@@ -443,18 +443,18 @@ void main(){
                 else{
                     printf("0\n");
                 }
-                auxdet = liberamatriz(numl,numc,auxdet);
+                auxdet = liberamatriz(numl,numc,auxdet);    ;// a memória ocupada pela matriz é liberada
             }
-            else{
+            else{                               // caso a matriz não seja quadrada, não existe determinante
              printf("\nEssa matriz n%co possui determinante",198);
             }
         }
 
-        if (opcao == 8){
+        if (opcao == 8){                    //sistema linear
             det = 0;
-            for(i=0;i<numl;i++){
-                if(consulta2(linha[i],i+1)>=0){
-                        if(consulta2(linha[i],numc)>=0){
+            for(i=0;i<numl;i++){            //primeiro vamos fazer o teste de diagonal dominante na matriz
+                if(consulta2(linha[i],i+1)>=0){ //em toda linha, a soma da linha menos duas vezes o coeficeinte da solução menos o resultado deve ser menor que 0
+                        if(consulta2(linha[i],numc)>=0){    //as condições são feitas para acertar o sinal dos coeficiente da solução e do resultado
                             det = somalinha2(linha[i],0) - 2*consulta2(linha[i],i+1) - consulta2(linha[i],numc);
                         }
                         else{
@@ -471,41 +471,41 @@ void main(){
                 }
             }
 
-            if(det<=0){
-                if(numc!=numl+1){
+            if(det<=0){                     //agora sabemos se podemos ou não aplicar Gauss-Seidel
+                if(numc!=numl+1){           //teste dimensional da matriz
                     printf("\nEssa matriz n%co pode ser resolvida por Gauss-Seidel",198);
                 }
                 else{
-                    float * x;
+                    float * x;              //x é o vetor das soluções, alocado dinamicamente
                     x = (float*)malloc(numc*sizeof(float));
                     for(i=0;i<numc;i++){
-                        x[i] = 0;
+                        x[i] = 0;           //todas as soluções são incializadas com zero
                     }
-                    for(j=0;j<100;j++){
-                        dif = 0;
-                        y = 0;
+                    for(j=0;j<100;j++){     //caso a solução não alcance a diferença minima, ela para após 100 processos
+                        dif = 0;            //diferenca maxima entre as soluções antigas e novas
+                        y = 0;              //auxilia o cálculo da diferenca maxima
                         for(i=0;i<numl;i++){
                             y = x[i];
-                            x[i] = gauss(linha[i],numc,i,x,1,0);
-                            if(x[i]<0.000001 && x[i]> -0.000001){
+                            x[i] = gauss(linha[i],numc,i,x,1,0); // a solução recebe seu novo valor
+                            if(x[i]<0.000001 && x[i]> -0.000001){   //para evitar exponenciais
                                 x[i] = 0.0;
                             }
-                            y = x[i] - y;
-                            if(y<0){
+                            y = x[i] - y;                       //y é a diferença entre o valor antigo e novo
+                            if(y<0){                            // módulo de y
                                 y = -y;
                             }
-                            if(y > dif){
+                            if(y > dif){                        //dif recebe a maior entre as diferenças
                                 dif = y;
                             }
-                            if(dif<0.000001){
-                                j = 100;
+                            if(dif<0.000001){                   //se a diferença maxima for menor que a menor unidade do float(dif minima), para o processo
+                                j = 100;                        //o processo somente repete 100 vezes se a solução não estiver convergindo
                             }
                         }
                     }
-                    for(i=0;i<numl;i++){
+                    for(i=0;i<numl;i++){                        //imprime as soluções
                             printf("\nx[%d] = %g",i+1,x[i]);
                     }
-                    free(x);
+                    free(x);                                    //libera o vetor
                 }
             }
             else{
